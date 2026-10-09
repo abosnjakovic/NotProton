@@ -72,3 +72,18 @@ jobs:
             release/appcast.xml \
             --title "$VERSION" \
             --notes "$RELEASE_NOTES"
+
+      # The tap is this repo, so the cask has to follow the release it points
+      # at. It lands on main after the tag, so the tagged tree still holds the
+      # previous version's cask.
+      - name: Refresh the Homebrew cask
+        if: github.ref_name == 'main'
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          sha256=$(shasum -a 256 release/NotProton.zip | cut -d' ' -f1)
+          scripts/make-cask.sh "$VERSION" "$sha256" "$GITHUB_REPOSITORY" > Casks/notproton.rb
+          git add Casks/notproton.rb
+          git diff --cached --quiet && exit 0
+          git commit -m "Update the Homebrew cask to $VERSION"
+          git push origin HEAD:main

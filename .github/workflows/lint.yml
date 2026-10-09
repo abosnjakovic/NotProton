@@ -44,3 +44,23 @@ jobs:
 
       - name: Lint the embedded run script
         run: make runcheck
+
+  cask:
+    name: homebrew cask
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # A release regenerates the cask from the script, so a hand edit here
+      # disappears at the next release. Feed the committed version, checksum
+      # and repo back through the generator: anything else that differs was
+      # edited in the wrong file.
+      - name: Confirm the cask still matches its generator
+        run: |
+          version=$(sed -n 's/^  version "\(.*\)"/\1/p' Casks/notproton.rb)
+          sha256=$(sed -n 's/^  sha256 "\(.*\)"/\1/p' Casks/notproton.rb)
+          repo=$(sed -n 's|^  homepage "https://github.com/\(.*\)"|\1|p' Casks/notproton.rb)
+          scripts/make-cask.sh "$version" "$sha256" "$repo" | diff -u Casks/notproton.rb -
+
+      - name: Lint the cask
+        run: brew style Casks/notproton.rb

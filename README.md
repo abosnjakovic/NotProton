@@ -9,6 +9,29 @@ This tool is intended to be used with Steam Client 1788652215 or 1790121765 and 
 20261006 or 2026082**. Both the FEX and the Rosetta versions are supported. I recommend using the FEX version of the 
 Preview 20261006, as it includes both the FEX version as well as the Rosetta one. 
 
+## Install
+
+This repo is its own Homebrew tap, so the cask installs from here:
+
+```sh
+brew tap notprotonnot/notproton https://github.com/NotProtonNot/NotProton
+brew install --cask notproton
+```
+
+The app is ad-hoc signed, so Gatekeeper rejects a quarantined copy. If it
+refuses to open, clear the flag (or install with `--no-quarantine` on a
+Homebrew that still takes the flag):
+
+```sh
+xattr -dr com.apple.quarantine /Applications/NotProton.app
+```
+
+NotProton updates itself through Sparkle, so `brew upgrade` is not how new
+versions arrive; the cask records whatever the last release was. Without
+Homebrew, take `NotProton.zip` from the
+[releases page](https://github.com/NotProtonNot/NotProton/releases) and drop
+the app in `/Applications`.
+
 The macOS app itself is located in the ```app``` folder. The core logic is in ```dylib```.
 ```lsteamclient``` is a macOS port of Valve's lsteamclient. ```steam-shim```is a port of Valve's
 steam-helper from Proton 9. ntdll-patch patches the copy of CrossOver that the app
